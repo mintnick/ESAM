@@ -21,4 +21,4 @@ ESAM是一个管理EVE国服角色和账户设置的小工具，使用Python和T
  A few differences:
 * Writen in Python and Tkinter
 * Using default path, doesn't required to be in the setting directory
-* Request names from the Serenity ESI with Chinese characters
+* Request names from the Serenity ESI
