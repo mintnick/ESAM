@@ -22,7 +22,17 @@ title = 'ESAM'
 icon = 'images\icon.ico'
 size = '600x400+600+400'
 loading = '读取中...'
-default_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+default_path = ''
+
+root_path = Path.home().__str__()\
+            + '\AppData\Local\CCP\EVE\\'
+dirs = [(root_path + f) for f in listdir(root_path) if f.endswith('serenity_serenity.evepc.163.com')]
+if len(dirs) != 0:
+    default_path = dirs[0] + '\settings_Default\\'
+    print(default_path)
+else:
+    default_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+
 url_prefix = 'https://esi.evepc.163.com/latest/characters/'
 url_suffix = '/?datasource=serenity'
 char_prefix = 'core_char_'
@@ -85,7 +95,7 @@ def read_files():
         user_cb.current(0)
 
     if len(chars_list) == 0 or len(users_list) == 0:
-        messagebox.showinfo("错误", "未读取到设置文件，请确认程序在正确的文件夹下，或输入了正确的路径并刷新")
+        messagebox.showinfo("错误", "未读取到设置文件，请确认文件路径正确并刷新")
 
 
 def overwrite():
@@ -124,7 +134,7 @@ def refresh():
 
 
 def reset_path():
-    file_path = Path(__file__).parent.resolve()
+    file_path = default_path
     path_entry.delete(0, END)
     path_entry.insert(0, file_path)
 

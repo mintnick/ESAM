@@ -7,12 +7,12 @@
 
 ## 安装和使用
 * 下载压缩包  
-* 解压至EVE设置文件路径，国服默认在C:\Users\你的用户名\AppData\Local\CCP\EVE\X_eve_sharedcache_serenity_serenity.evepc.163.com\settings_Default，其中X为你安装EVE客户端的盘符
-* 确保.exe文件和.dat文件在一个目录下
+* 解压至任意位置
 * 运行ESAM.exe
 * 等待角色信息读取（角色名来自公开的ESI，不涉及隐私，当角色数量较多时，等待时间较长）
 * 选择模板角色和账号
 * 确认覆盖其它设置文件
+* 如果未读取到设置文件，请确认文件路径是否正确并刷新
 
 ## English
  **E**ve**S**erenity**A**ccount**M**anager is an account/character management tool for EVE Online Serenity server(China server). Similar to [EANM](https://github.com/Bertral/EANM/),
