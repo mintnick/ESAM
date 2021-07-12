@@ -21,8 +21,7 @@ title = 'ESAM'
 icon = 'images\icon.ico'
 size = '600x400+600+400'
 loading = '读取中...'
-default_path = Path.home().__str__() \
-               + '\AppData\Local\CCP\EVE\d_eve_sharedcache_serenity_serenity.evepc.163.com\settings_Default\\'
+default_path = os.path.abspath(os.path.dirname(sys.argv[0]))
 url_prefix = 'https://esi.evepc.163.com/latest/characters/'
 url_suffix = '/?datasource=serenity'
 char_prefix = 'core_char_'
@@ -33,23 +32,11 @@ chars_list = []
 users = []
 users_list = []
 
-# files = [(default_path + f) for f in listdir(default_path)
-#          if isfile(join(default_path, f)) and f.split('.')[0].split('_')[-1].isnumeric()]
-# files.sort(key=os.path.getmtime, reverse=True)  # sort by last modified date in descending order
-
-# for f in files:
-#     f = f.split('\\')[-1]
-#     if f.startswith(char_prefix):
-#         chars.append(f)
-#     elif f.startswith(user_prefix):
-#         users.append(f)
-
 
 def read_files():
     char_cb.set(loading)
     user_cb.set(loading)
-    selected_path = input_path.get()
-    print(selected_path)
+    selected_path = input_path.get() + '\\'
 
     if not os.path.exists(selected_path):
         messagebox.showinfo("路径错误", "未读取到设置文件")
@@ -58,6 +45,11 @@ def read_files():
     files = [(selected_path + f) for f in listdir(selected_path)
              if isfile(join(selected_path, f)) and f.split('.')[0].split('_')[-1].isnumeric()]
     files.sort(key=os.path.getmtime, reverse=True)  # sort by last modified date in descending order
+
+    chars.clear()
+    users.clear()
+    chars_list.clear()
+    users_list.clear()
 
     for f in files:
         f = f.split('\\')[-1]
@@ -86,13 +78,16 @@ def read_files():
     user_cb['values'] = users_list
     user_cb.current(0)
 
+    if len(chars_list) == 0 or len(users_list) == 0:
+        messagebox.showinfo("ESI错误", "未从ESI读取到角色名，请确认程序在正确的路径下")
+
 
 def overwrite():
     selected_path = input_path.get()
     selected_char_index = char_cb.current()
-    selected_char = os.path.join(default_path, chars[selected_char_index])
+    selected_char = os.path.join(selected_path, chars[selected_char_index])
     selected_user_index = user_cb.current()
-    selected_user = os.path.join(default_path, users[selected_user_index])
+    selected_user = os.path.join(selected_path, users[selected_user_index])
 
     flag = False
     if char_var.get() == 1 and chars_list:
@@ -116,8 +111,7 @@ def overwrite():
 
 
 def reset_path():
-    file_path = Path.home().__str__() \
-                + '\AppData\Local\CCP\EVE\d_eve_sharedcache_serenity_serenity.evepc.163.com\settings_Default\\'
+    file_path = Path(__file__).parent.resolve()
     path_entry.delete(0, END)
     path_entry.insert(0, file_path)
 
@@ -126,7 +120,8 @@ def reset_path():
 # Window
 window = Tk()
 window.title(title)
-window.iconbitmap(icon)
+if isfile(icon):
+    window.iconbitmap(icon)
 window.geometry(size)
 window.minsize(600, 400)
 
