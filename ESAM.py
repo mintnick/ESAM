@@ -15,6 +15,7 @@ import threading
 
 # Values
 title = 'ESAM'
+icon = 'images\icon.ico'
 size = '600x300+600+400'
 loading = '读取中...'
 file_path = Path.home().__str__()\
@@ -86,6 +87,7 @@ def overwrite():
 # Window
 window = Tk()
 window.title(title)
+window.iconbitmap(icon)
 window.geometry(size)
 window.minsize(600, 300)
 
