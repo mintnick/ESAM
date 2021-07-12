@@ -4,10 +4,13 @@
 
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 from os import listdir
 from os.path import isfile, join
-import os.path, time
-import urllib.request, json
+import os.path
+import time
+import urllib.request
+import json
 import shutil
 import copy
 from pathlib import Path
@@ -32,7 +35,7 @@ users_list = []
 
 files = [(file_path + f) for f in listdir(file_path)
          if isfile(join(file_path, f)) and f.split('.')[0].split('_')[-1].isnumeric()]
-files.sort(key=os.path.getmtime, reverse=True)
+files.sort(key=os.path.getmtime, reverse=True)  # sort by last modified date in descending order
 
 for f in files:
     f = f.split('\\')[-1]
@@ -70,17 +73,23 @@ def overwrite():
     selected_user_index = user_cb.current()
     selected_user = os.path.join(file_path, users[selected_user_index])
 
-    if char_var.get() == 1:
+    flag = False
+    if char_var.get() == 1 and chars_list:
+        flag = True
         dst = copy.deepcopy(chars)
         dst.pop(selected_char_index)
         for f in dst:
             shutil.copyfile(selected_char, os.path.join(file_path, f))
 
-    if user_var.get() == 1:
+    if user_var.get() == 1 and users_list:
+        flag = True
         dst = copy.deepcopy(users)
         dst.pop(selected_user_index)
         for f in dst:
             shutil.copyfile(selected_user, os.path.join(file_path, f))
+
+    if flag:
+     messagebox.showinfo("完成", "设置文件已覆盖")
 
 
 '''GUI'''
@@ -122,7 +131,7 @@ user_checkbox.select()
 user_checkbox.place(relx=0.1, rely=0.6)
 
 # Alert message
-alert_label = Label(window, text='- 角色较多时读取需要一些时间\n\n- 操作前建议做好备份\n\n- 覆盖时建议关闭EVE和启动器', fg='red', font=6, justify=LEFT)
+alert_label = Label(window, text='- 角色较多时读取需要一些时间\n\n- 操作前建议做好备份\n\n- 覆盖时建议关闭客户端', fg='#B03A2E', font=6, justify=LEFT)
 alert_label.place(relx=0.5, rely=0.48)
 
 # Button
