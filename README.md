@@ -1,5 +1,5 @@
 # ESAM
-![EANM](https://user-images.githubusercontent.com/14357052/125241009-3f019080-e32e-11eb-91c2-54b68e566ff3.JPG)
+![ESAM](https://user-images.githubusercontent.com/14357052/125244780-116b1600-e333-11eb-9458-642ba8a4c9c0.JPG)
 
 ## 介绍
 **ESAM**(EVE Serenity Account Manager)是一个管理EVE**国服**角色和账户设置的小工具，使用Python和Tkinter编写，可在**Windows**环境下使用。  
