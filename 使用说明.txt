@@ -1,0 +1,9 @@
+- 下载压缩包
+- 解压至EVE设置文件路径
+    国服默认在C:\Users\你的用户名\AppData\Local\CCP\EVE\XXXXX_serenity_serenity.evepc.163.com\settings_Default
+    其中XXXXX和你EVE的安装路径有关
+- 确保ESAM.exe文件和一堆.dat文件在同一个目录下
+- 运行ESAM.exe
+- 等待角色信息读取（角色名来自公开的ESI，不涉及隐私，当角色数量较多时或国服ESI访问不畅时，等待时间较长）
+- 选择模板角色和账号
+- 确认覆盖其它设置文件

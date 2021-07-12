@@ -1,5 +1,6 @@
 # ESAM: Eve Serenity Account Manager
 # Arthur: Nick Ning
+# Version: 1.4
 # Created on: 2021/7/9 10:04
 
 from tkinter import *
@@ -31,6 +32,10 @@ chars = []
 chars_list = []
 users = []
 users_list = []
+
+window = Tk()
+char_cb = ttk.Combobox(window, state='readonly', font=8)
+user_cb = ttk.Combobox(window, state='readonly', font=8)
 
 
 def read_files():
@@ -73,13 +78,14 @@ def read_files():
         time_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(selected_path + f)))
         users_list.append(user_id + ' - 最后修改: ' + time_str)
 
-    char_cb['values'] = chars_list
-    char_cb.current(0)
-    user_cb['values'] = users_list
-    user_cb.current(0)
+    if chars and users:
+        char_cb['values'] = chars_list
+        char_cb.current(0)
+        user_cb['values'] = users_list
+        user_cb.current(0)
 
     if len(chars_list) == 0 or len(users_list) == 0:
-        messagebox.showinfo("ESI错误", "未从ESI读取到角色名，请确认程序在正确的路径下")
+        messagebox.showinfo("错误", "未读取到设置文件，请确认程序在正确的文件夹下，或输入了正确的路径并刷新")
 
 
 def overwrite():
@@ -110,6 +116,13 @@ def overwrite():
         messagebox.showinfo("未覆盖", "ESI读取失败")
 
 
+def refresh():
+    char_cb.set(loading)
+    user_cb.set(loading)
+
+    threading.Thread(target=read_files).start()
+
+
 def reset_path():
     file_path = Path(__file__).parent.resolve()
     path_entry.delete(0, END)
@@ -118,7 +131,6 @@ def reset_path():
 
 '''GUI'''
 # Window
-window = Tk()
 window.title(title)
 if isfile(icon):
     window.iconbitmap(icon)
@@ -134,7 +146,7 @@ path_entry = Entry(window, textvariable=input_path)
 path_entry.place(relx=0.17, rely=0.04, height=30, relwidth=0.56)
 path_entry.insert(0, default_path)
 
-refresh_btn = Button(text='刷新', command=read_files)
+refresh_btn = Button(text='刷新', command=refresh)
 refresh_btn.place(relx=0.75, rely=0.04, height=30, relwidth=0.08)
 path_btn = Button(text='恢复默认', command=reset_path)
 path_btn.place(relx=0.85, rely=0.04, height=30, relwidth=0.1)
@@ -143,14 +155,12 @@ path_btn.place(relx=0.85, rely=0.04, height=30, relwidth=0.1)
 char_label = Label(window, text='选择模板角色', font=10)
 char_label.place(relx=0.05, rely=0.15)
 
-char_cb = ttk.Combobox(window, state='readonly', font=8)
 char_cb.set(loading)
 char_cb.place(relx=0.05, rely=0.23, relwidth=0.9, height=30)
 
 user_label = Label(window, text='选择模板账号', font=10)
 user_label.place(relx=0.05, rely=0.34)
 
-user_cb = ttk.Combobox(window, state='readonly', font=8)
 user_cb.set(loading)
 user_cb.place(relx=0.05, rely=0.42, relwidth=0.9, height=30)
 
