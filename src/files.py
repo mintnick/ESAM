@@ -6,8 +6,8 @@ import time
 
 class SettingFilesReader:
     # Mac
-    root = '/Users/nick'
-    # root = Path.home().__str__() + '\AppData\Local\CCP\EVE\\'
+    # root = '/Users/nick'
+    root = Path.home().__str__() + '\AppData\Local\CCP\EVE\\'
     server = ''
     dirs = []
     character = []
