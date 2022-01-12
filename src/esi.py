@@ -4,7 +4,6 @@ import json
 class EsiReader:
     prefix = ''
     suffix = ''
-    err_msg = '未读取到角色名'
 
     def __init__(self, server):
         if server == 'Tranquility':
@@ -25,4 +24,4 @@ class EsiReader:
             name = json.loads(data.read().decode())['name']
             return name
         except urllib.error.HTTPError as e:
-            return err_msg
+            return ''
