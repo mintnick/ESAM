@@ -7,6 +7,8 @@ from tkinter import Label
 import os
 from os.path import isfile
 import files
+import subprocess
+import pathlib
 
 '''main window components'''
 root = tk.Tk() # main window
@@ -18,16 +20,17 @@ tranquility_btn = Button() # tranquility button
 path_box = ttk.Combobox(root) # path box
 open_btn = Button() # open-selected-dir button
 refresh_btn = Button() # refresh-files button
-character_box = ttk.Treeview() # characters box
-account_box = ttk.Treeview() # accounts box
+character_box = ttk.Treeview(root) # characters box
+account_box = ttk.Treeview(root) # accounts box
 overwrite_btn = Button() # overwrite button
 help_btn = Button() # help button
 
 '''variables'''
-# TODO: create lists, strings
 path_list = []  # setting dirs list
-selected_path = StringVar() # path string
+selected_path = tk.StringVar() # path string
 fileReader = files.SettingFilesReader('Serenity')
+characters = []
+accounts = []
 
 '''render GUI'''
 def createGUI():
@@ -102,13 +105,17 @@ def createGUI():
     column_1_width = int(700*character_box_width*0.4)
     column_2_width = int(700*character_box_width*0.6)
 
-    character_box_columns = ('character_id', 'character_name')
-    character_box = ttk.Treeview(root, columns=character_box_columns, show='headings')
+    global character_box
+    character_box = ttk.Treeview(root, columns=('character_id', 'character_name'), show='headings')
     character_box.heading('character_id', text='角色ID')
     character_box.column('character_id', width=column_1_width, minwidth=column_1_width, anchor=tk.CENTER, stretch=False)
     character_box.heading('character_name', text='角色名')
     character_box.column('character_name', width=column_2_width, minwidth=column_2_width, anchor=tk.CENTER, stretch=False)
     character_box.place(relx=0.02, rely=character_box_top, relwidth=character_box_width, relheight=character_box_height)
+    # FIXME: scrollbar place
+    character_scrollbar = ttk.Scrollbar(root, orient=tk.VERTICAL, command=character_box.yview)
+    character_box.configure(yscroll=character_scrollbar.set)
+    character_scrollbar.pack(side='right', fill='y')
 
     # accounts box
     account_box_label_top = char_box_label_top
@@ -119,15 +126,19 @@ def createGUI():
     account_box_width = character_box_width
     account_box_height = character_box_height
     account_box_columns = ('account_id', 'last_mod_time')
+    global account_box
     account_box = ttk.Treeview(root, columns=account_box_columns, show='headings', height=10)
     account_box.heading('account_id', text='账号ID')
     account_box.column('account_id', width=column_1_width, minwidth=column_1_width, anchor=tk.CENTER, stretch=False)
     account_box.heading('last_mod_time', text='最后修改时间')
     account_box.column('last_mod_time', width=column_2_width, minwidth=column_2_width, anchor=tk.CENTER, stretch=False)
     account_box.place(relx=0.52, rely=account_box_top, relwidth=account_box_width, relheight=character_box_height)
+    # FIXME: scrollbar place
+    # scrollbar = ttk.Scrollbar(root, orient=tk.VERTICAL, command=account_box.yview)
+    # account_box.configure(yscroll=scrollbar.set)
+    # scrollbar.grid(row=0, column=1, sticky='ns')
 
     # separator 2
-    # FIXME: box headings
     separator_2_top = character_box_top + character_box_height + 0.02
     separator_2 = ttk.Separator(root, orient='horizontal')
     separator_2.place(relx=0, rely=separator_2_top, relwidth=1, relheight=1)
@@ -151,28 +162,39 @@ def createGUI():
     help_btn.place(relx=help_btn_start, rely=help_btn_top, relwidth=help_btn_width, relheight=help_btn_height)
 
 ''' Change server '''
-# TODO:change button color, change default path, change boxes content
 def change_server(server):
     fileReader.server = server
+    read_dirs()
 
 '''Change setting files path'''
-# TODO: change path box, change boxes content
 def change_path():
     current_directory = filedialog.askdirectory(
         parent=root,
         initialdir=fileReader.root,
         title='选择包含设置文件的文件夹'
     )
+    current_directory = pathlib.PureWindowsPath(current_directory)
+    selected_path.set(current_directory)
+    path_box.set(selected_path.get())
 
 '''Open selected directory'''
-# TODO: open directory
 def open_dir():
-    os.system('explorer.exe' + selected_path)
+    if not os.path.isdir(selected_path.get()):
+        return
+    os.startfile(selected_path.get())
 
 '''Refresh files'''
 # TODO: refresh
 def refresh_files():
-    print('')
+    char_ids, user_ids = fileReader.read_id(selected_path.get())
+    for char_id in char_ids:
+        record = (char_id, '...')
+        character = characters.append(record)
+        character_box.insert('', tk.END, values = record)
+    for user_id in user_ids:
+        record = (user_id, '...')
+        account = accounts.append(record)
+        account_box.insert('', tk.END, values= record)
 
 '''Overwrite files'''
 # TODO: overwrite
@@ -188,8 +210,8 @@ def open_help():
 def read_dirs():
     path_list = fileReader.getDirs()
     path_box['values'] = path_list
-    selected_path = path_list[0]
-    path_box.set(selected_path)
+    selected_path.set(path_list[0])
+    path_box.set(selected_path.get())
 
 createGUI()
 read_dirs()
