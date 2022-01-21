@@ -16,7 +16,7 @@ class EsiReader:
             print('Invalid server name')
 
     '''Get character name by id'''
-    def getCharacterName(self, id):
+    def get_character_name(self, id):
         url = self.prefix + id + self.suffix
 
         try:

@@ -4,11 +4,15 @@ from tkinter import ttk
 from tkinter import Button
 from tkinter import StringVar
 from tkinter import Label
+
 import os
 from os.path import isfile
-import files
 import subprocess
 import pathlib
+import threading
+
+import files
+import esi
 
 '''main window components'''
 root = tk.Tk() # main window
@@ -31,6 +35,7 @@ selected_path = tk.StringVar() # path string
 fileReader = files.SettingFilesReader('Serenity')
 characters = []
 accounts = []
+esi_signal = True # keep reading from esi unless being stopped (change server, dir, etc)
 
 '''render GUI'''
 def createGUI():
@@ -61,6 +66,7 @@ def createGUI():
     path_box['textvariable'] = selected_path
     path_box['state'] = 'readonly'
     path_box.place(relx=path_box_start, rely=path_box_top, relwidth=path_box_width, relheight=path_box_height)
+    path_box.bind("<<ComboboxSelected>>", select_path)
 
     # path buttons
     path_btn_start = 0.13
@@ -112,10 +118,9 @@ def createGUI():
     character_box.heading('character_name', text='角色名')
     character_box.column('character_name', width=column_2_width, minwidth=column_2_width, anchor=tk.CENTER, stretch=False)
     character_box.place(relx=0.02, rely=character_box_top, relwidth=character_box_width, relheight=character_box_height)
-    # FIXME: scrollbar place
     character_scrollbar = ttk.Scrollbar(root, orient=tk.VERTICAL, command=character_box.yview)
     character_box.configure(yscroll=character_scrollbar.set)
-    character_scrollbar.pack(side='right', fill='y')
+    character_scrollbar.place(relx=0.47, rely=character_box_top, relheight=character_box_height)
 
     # accounts box
     account_box_label_top = char_box_label_top
@@ -133,10 +138,9 @@ def createGUI():
     account_box.heading('last_mod_time', text='最后修改时间')
     account_box.column('last_mod_time', width=column_2_width, minwidth=column_2_width, anchor=tk.CENTER, stretch=False)
     account_box.place(relx=0.52, rely=account_box_top, relwidth=account_box_width, relheight=character_box_height)
-    # FIXME: scrollbar place
-    # scrollbar = ttk.Scrollbar(root, orient=tk.VERTICAL, command=account_box.yview)
-    # account_box.configure(yscroll=scrollbar.set)
-    # scrollbar.grid(row=0, column=1, sticky='ns')
+    account_scrollbar = ttk.Scrollbar(root, orient=tk.VERTICAL, command=account_box.yview)
+    account_box.configure(yscroll=account_scrollbar.set)
+    account_scrollbar.place(relx=0.97, rely=account_box_top, relheight=account_box_height)
 
     # separator 2
     separator_2_top = character_box_top + character_box_height + 0.02
@@ -165,6 +169,12 @@ def createGUI():
 def change_server(server):
     fileReader.server = server
     read_dirs()
+    refresh_files()
+
+''' Select path '''
+def select_path(event):
+    selected_path.set(event.widget.get())
+    refresh_files()
 
 '''Change setting files path'''
 def change_path():
@@ -176,6 +186,7 @@ def change_path():
     current_directory = pathlib.PureWindowsPath(current_directory)
     selected_path.set(current_directory)
     path_box.set(selected_path.get())
+    refresh_files()
 
 '''Open selected directory'''
 def open_dir():
@@ -184,17 +195,30 @@ def open_dir():
     os.startfile(selected_path.get())
 
 '''Refresh files'''
-# TODO: refresh
 def refresh_files():
-    char_ids, user_ids = fileReader.read_id(selected_path.get())
-    for char_id in char_ids:
-        record = (char_id, '...')
-        character = characters.append(record)
-        character_box.insert('', tk.END, values = record)
-    for user_id in user_ids:
-        record = (user_id, '...')
-        account = accounts.append(record)
-        account_box.insert('', tk.END, values= record)
+    character_box.delete(*character_box.get_children())
+    account_box.delete(*account_box.get_children())
+    characters = []
+    accounts = []
+    esi_signal = True
+
+    characters = fileReader.read_character(selected_path.get())
+    accounts = fileReader.read_account(selected_path.get())
+
+    for c in characters:
+        character_box.insert('', tk.END, values=(c[0], c[1]))
+    for a in accounts:
+        account_box.insert('', tk.END, values=a)
+
+    # TODO: read name in backend thread, edit treeview rows
+    while esi_signal == True and characters:
+        esiReader = esi.EsiReader(fileReader.server)
+        for c in characters:
+            c_name = esiReader.get_character_name(c[0])
+            if c_name == '':
+                c_name = '未知'
+            print(c_name)
+        esi_signal = False
 
 '''Overwrite files'''
 # TODO: overwrite
@@ -215,4 +239,5 @@ def read_dirs():
 
 createGUI()
 read_dirs()
+refresh_files()
 root.mainloop()

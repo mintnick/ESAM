@@ -32,45 +32,43 @@ class SettingFilesReader:
         
         return self.dirs
 
-    def read_id(self, path):
+    def read_account(self, path):
         if not os.path.isdir(path):
-            return [], []
+            return []
 
-        char_ids = []
-        user_ids = []
+        users = [] # [(id, mod_time)]
+
+        files = [f for f in listdir(path)
+             if os.path.isfile(os.path.join(path, f)) and f.split('.')[0].split('_')[-1].isnumeric() and f.startswith(self.user_prefix)]
         
-        for file in os.listdir(path):
-            filename = os.fsdecode(file)
+        for f in files:
+            filename = os.fsdecode(f)
             file_id = filename.split('.')[0].split('_')[-1]
-            if file_id.isnumeric():
-                if filename.startswith(self.char_prefix):
-                    char_ids.append(file_id)
-                elif filename.startswith(self.user_prefix):
-                    user_ids.append(file_id)
+            mod_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(path + os.sep + f)))
+            users.append((file_id, mod_time))
         
-        return char_ids, user_ids
+        users.sort(key=lambda user: user[1], reverse=True)
+        return users
 
 
-    def readCharacters(self, path):
-
-        characters = [] # [(id, name)]
-        users = [] # [(id, last_mod_time)]
-
+    def read_character(self, path):
         # is directory exsits
-        # directory = os.path.join(path, 'settings_Default')
         if not os.path.isdir(path):
-            return [], []
-        
-        esiReader = esi.EsiReader(self.server)
-        for file in os.listdir(directory):
-            filename = os.fsdecode(file)
-            file_id = filename.split('.')[0].split('_')[-1]
-            if file_id.isnumeric():
-                if filename.startswith(char_prefix):
-                    name = esiReader.getCharacterName(id)
-                    characters.append((id, name))
-                elif filename.startswith(user_prefix):
-                    mod_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(directory + os.sep + file)))
-                    users.append((id, mod_time))
+            return []
 
-        return characters, users
+        characters = [] # [(id, name, mod_time)]
+
+        files = [f for f in listdir(path)
+             if os.path.isfile(os.path.join(path, f)) and f.split('.')[0].split('_')[-1].isnumeric() and f.startswith(self.char_prefix)]
+
+        esiReader = esi.EsiReader(self.server)
+        for f in files:
+            filename = os.fsdecode(f)
+            file_id = filename.split('.')[0].split('_')[-1]
+            mod_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(path + os.sep + f)))
+            characters.append((file_id, "...", mod_time))
+
+        characters.sort(key=lambda user: user[2], reverse=True)
+        for c in characters:
+            c = (c[0], c[1])
+        return characters
