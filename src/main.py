@@ -32,7 +32,7 @@ help_btn = Button() # help button
 
 '''variables'''
 title = 'ESAM' # title
-icon = '..' + os.sep + 'images' + os.sep + 'icon.ico' # icon
+#icon = '..' + os.sep + 'images' + os.sep + 'icon.ico' # icon
 size = '700x600+400+400' # size
 selected_btn_color = "#ABEBC6"
 
@@ -46,8 +46,8 @@ esi_signal = True # fetch signal
 '''render GUI'''
 def createGUI():
     root.title(title)
-    if isfile(icon):
-        root.iconbitmap(icon)
+    # if isfile(icon):
+    #     root.iconbitmap(icon)
     root.geometry(size)
     root.resizable(0, 0)
 
@@ -251,8 +251,8 @@ def overwrite():
     if msg_c or msg_a:
         msg_c = '<未选择角色>' if not selected_c else msg_c
         msg_a = '<未选择账号>' if not selected_a else msg_a
-        confirm = messagebox.askyesno(title='确认用下面的模板覆盖所有设置？',
-                            message=(msg_c + '\n\n ' + msg_a))
+        confirm = messagebox.askyesno(title='确认覆盖',
+                            message=('确认用以下模板覆盖所有设置？\n\n' + msg_c + '\n\n ' + msg_a))
         if confirm:
             fileReader.overwrite(selected_path.get(), characters, selected_c_id, accounts, selected_a_id)
             refresh_files()
