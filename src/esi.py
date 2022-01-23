@@ -24,4 +24,4 @@ class EsiReader:
             name = json.loads(data.read().decode())['name']
             return name
         except urllib.error.HTTPError as e:
-            return ''
+            return '<未知>'
