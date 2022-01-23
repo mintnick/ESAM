@@ -1,5 +1,5 @@
 # ESAM
-![ESAM](https://user-images.githubusercontent.com/14357052/150668011-a6e729a2-c8f3-45b9-9426-49a7e926d651.JPG)
+![ESAM](https://user-images.githubusercontent.com/14357052/150668269-177f40e6-4387-4f34-aa3f-eacfcee662c4.JPG)
 
 ## 介绍
 [English](#en)</br>
