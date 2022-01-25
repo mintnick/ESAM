@@ -271,7 +271,8 @@ def open_help():
 def read_dirs():
     path_list = fileReader.getDirs()
     path_box['values'] = path_list
-    selected_path.set(path_list[0])
+    if path_list:
+        selected_path.set(path_list[0])
     path_box.set(selected_path.get())
 
 '''Read character names'''
