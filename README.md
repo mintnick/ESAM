@@ -18,3 +18,10 @@
 ## English<a name="en"></a>
  **E**ve**S**erenity**A**ccount**M**anager is an account/character management tool for EVE Online(after 2.0, it supports both Serenity and Tranquility, so the name is a bit inaccurate now). Similar as the exsiting tool [EANM](https://github.com/Bertral/EANM/),
   you choose a base character/user to overwrite the others.
+
+## Build
+<code>
+pip install pyinstaller
+
+pyinstaller -F ./src/main.py -n "ESAM_2.1" --clean
+</code>
