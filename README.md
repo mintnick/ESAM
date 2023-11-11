@@ -20,8 +20,8 @@
   you choose a base character/user to overwrite the others.
 
 ## Build
-<code>
-pip install pyinstaller
+```
+py -m pip install pyinstaller
 
-pyinstaller -F ./src/main.py -n "ESAM_2.1" --clean
-</code>
+py -m PyInstaller --noconsole -F ./src/main.py -n "ESAM_2.1" --clean
+```
